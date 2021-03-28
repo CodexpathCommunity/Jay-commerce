@@ -1,26 +1,42 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { AppBody, AppComponent } from "./AppStyles";
-import NavBar from "./components/NavBar/Index";
-import TopNav from "./components/TopNav/Index";
-import Home from "./Pages/Index";
-import SignInPage from "./Pages/SignInPage";
+import { useState, useEffect } from "react";
+import { Navbar, Products, Cart } from "./Components";
+import { commerce } from "./lib/commerce";
 
-function App() {
+const App = () => {
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState({});
+  const [cartItems, setcartItems] = useState([]);
+
+  const fetchProducts = async () => {
+    const { data } = await commerce?.products.list();
+    setProducts(data);
+  };
+  const fetchCart = async () => {
+    setCart(await commerce.cart.retrieve());
+  };
+  const fetchCartItems = async () => {
+    setcartItems(await cart.line_items);
+  };
+  const handleAddToCart = async (productId, quantity) => {
+    const item = await commerce.cart.add(productId, quantity);
+
+    setCart(item.cart);
+  };
+  useEffect(() => {
+    fetchProducts();
+    fetchCart();
+    fetchCartItems();
+  }, []);
+
+  console.log(cartItems);
   return (
-    <Router>
-      <AppComponent lightBg={false}>
-        <NavBar />
-        <TopNav />
-        <AppBody>
-          <Switch>
-            <Route path="/" component={Home} exact />
-            <Route path="/sign-in" component={SignInPage} exact />
-          </Switch>
-        </AppBody>
-      </AppComponent>
-    </Router>
+    <>
+      <Navbar totalItems={cart.total_items} />
+      <Cart cart={cartItems} />
+      {/* <Products products={products} onAddToCart={handleAddToCart} /> */}
+    </>
   );
-}
+};
 
 export default App;

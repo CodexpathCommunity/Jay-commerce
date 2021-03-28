@@ -8,8 +8,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --darkTheme: #25272c;
-  --LightTheme: #f3f5f7;
 }
 
 code {
